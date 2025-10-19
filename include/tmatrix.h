@@ -40,11 +40,6 @@ public:
       pMem = new T[sz];
       std::copy(v.pMem, v.pMem + sz, pMem);
   }
-  TDynamicVector(const TDynamicVector& v) : sz(v.sz)
-  {
-      pMem = new T[sz];
-      std::copy(v.pMem, v.pMem + sz, pMem);
-  }
   ~TDynamicVector()
   {
       delete[] pMem;
