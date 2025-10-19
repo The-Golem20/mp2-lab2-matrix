@@ -25,21 +25,24 @@ protected:
 public:
   TDynamicVector(size_t size = 1) : sz(size)
   {
+    if (size > MAX_VECTOR_SIZE) 
+        throw std::length_error("Too large size");
     if (sz == 0)
       throw out_of_range("Vector size should be greater than zero");
     pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
   }
   TDynamicVector(T* arr, size_t s) : sz(s)
   {
-    assert(arr != nullptr && "TDynamicVector ctor requires non-nullptr arg");
-    pMem = new T[sz];
-    std::copy(arr, arr + sz, pMem);
+      assert(arr != nullptr && "TDynamicVector ctor requires non-nullptr arg");
+      pMem = new T[sz];
+      std::copy(arr, arr + sz, pMem);
   }
   TDynamicVector(const TDynamicVector& v) : sz(v.sz)
   {
       pMem = new T[sz];
       std::copy(v.pMem, v.pMem + sz, pMem);
   }
+
   ~TDynamicVector()
   {
       delete[] pMem;
@@ -144,6 +147,8 @@ public:
   }
   T operator*(const TDynamicVector& v) noexcept(noexcept(T()))
   {
+      if (sz != v.sz) 
+          throw std::invalid_argument("Vector sizes must be equal");
       T res = T();
       for (size_t i = 0; i < sz; i++)
           res += pMem[i] * v.pMem[i];
@@ -180,11 +185,13 @@ class TDynamicMatrix : private TDynamicVector<TDynamicVector<T>>
   using TDynamicVector<TDynamicVector<T>>::pMem;
   using TDynamicVector<TDynamicVector<T>>::sz;
 public:
-  TDynamicMatrix(size_t s = 1) : TDynamicVector<TDynamicVector<T>>(s)
-  {
-    for (size_t i = 0; i < sz; i++)
-      pMem[i] = TDynamicVector<T>(sz);
-  }
+    TDynamicMatrix(size_t s = 1) : TDynamicVector<TDynamicVector<T>>(s)
+    {
+        if (s > MAX_MATRIX_SIZE)
+            throw std::length_error("Too large matrix size");
+        for (size_t i = 0; i < sz; i++)
+            pMem[i] = TDynamicVector<T>(sz);
+    }
 
   using TDynamicVector<TDynamicVector<T>>::operator[];
   using TDynamicVector<TDynamicVector<T>>::at;
